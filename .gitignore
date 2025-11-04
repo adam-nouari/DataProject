@@ -1,0 +1,11 @@
+# Envirionnement local
+.venv/
+
+# Raw and cleaned data
+data/raw/
+data/cleaned/data
+
+# fichiers temporaires
+__pycache__/
+*.pyc 
+
