@@ -3,9 +3,10 @@
 
 # Raw and cleaned data
 data/raw/
-data/cleaned/data
+data/cleaned/
 
 # fichiers temporaires
 __pycache__/
 *.pyc 
+*.csv
 
