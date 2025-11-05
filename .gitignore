@@ -9,4 +9,5 @@ data/cleaned/
 __pycache__/
 *.pyc 
 *.csv
+*.bdd
 
