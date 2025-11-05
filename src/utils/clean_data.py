@@ -13,6 +13,10 @@ def clean_file(input_path: Path, output_path: Path):
         # on laisse 'date' et 'position' inchangées
     })
 
+    if "2021" in input_path.name:
+        # Supprime le "T" entre la date et l'heure
+        df["date"] = df["date"].str.replace("T", " ", regex=False)
+
     # Convertir en numérique
     if "vitesse_mesuree" in df.columns:
         df["vitesse_mesuree"] = pd.to_numeric(df["vitesse_mesuree"], errors="coerce")
