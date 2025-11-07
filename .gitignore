@@ -1,13 +1,18 @@
-# Envirionnement local
+# Environnement local
 .venv/
 
-# Raw and cleaned data
+# Données brutes et nettoyées
 data/raw/
 data/cleaned/
 
-# fichiers temporaires
+# Base de données SQLite
+data/database/
+*.db
+*.sqlite
+*.sqlite3
+
+# Fichiers temporaires
 __pycache__/
-*.pyc 
+*.pyc
 *.csv
 *.bdd
-
