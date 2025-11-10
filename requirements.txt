@@ -1,4 +1,6 @@
+dash
+plotly
+pandas
+numpy
 requests
 tqdm
-pandas
-matplotlib
