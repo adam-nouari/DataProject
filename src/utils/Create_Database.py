@@ -42,8 +42,7 @@ def ensure_table(conn: sqlite3.Connection, replace: bool = False):
     conn.execute(f"""
         CREATE TABLE IF NOT EXISTS {TABLE}(
             date TEXT,
-            latitude REAL,
-            longitude REAL,
+            position TEXT,
             vitesse_mesuree REAL,
             limitation REAL
         );
