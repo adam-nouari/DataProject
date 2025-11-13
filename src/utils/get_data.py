@@ -2,9 +2,7 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-RESOURCES = {
-    "2021": "8b6cd190-3b66-43a8-b609-ce130019069f",  # CSV listé sur la page Data.gouv
-    "2023": "52200d61-5e80-4a4e-999f-6e1c184fa122",  # CSV listé sur la page Data.gouv
+RESOURCES = { "2023": "52200d61-5e80-4a4e-999f-6e1c184fa122",  # CSV listé sur la page Data.gouv
 }
 
 BASE_URL = "https://www.data.gouv.fr/api/1/datasets/r/"

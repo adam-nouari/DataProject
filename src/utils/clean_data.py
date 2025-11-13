@@ -13,9 +13,6 @@ def clean_file(input_path: Path, output_path: Path):
         # on laisse 'date' et 'position' inchangées
     })
 
-    if "2021" in input_path.name:
-        # Supprime le "T" entre la date et l'heure
-        df["date"] = df["date"].str.replace("T", " ", regex=False)
 
     # Convertir en numérique
     if "vitesse_mesuree" in df.columns:
@@ -40,7 +37,6 @@ def main():
 
     # Fichiers d'entrée et de sortie
     files = {
-        "vitesse_2021.csv": "vitesse_2021_cleaned.csv",
         "vitesse_2023.csv": "vitesse_2023_cleaned.csv"
     }
 
