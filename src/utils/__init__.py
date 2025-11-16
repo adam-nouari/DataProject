@@ -13,15 +13,9 @@ from .get_data import main as download_raw
 
 # --- Nettoyage des données ---
 from .clean_data import main as clean_raw
-from .clean_data import clean_file
 
 # --- Construction de la base SQLite + colonne 'periode' ---
 from .load_to_sqlite import main as load_database
-from .load_to_sqlite import (
-    import_csvs_to_sqlite,
-    tag_periode_inplace,
-    ensure_periode_column,
-)
 
 # --- Construction des fichiers agrégés pour le dashboard ---
 from .build_dashboard_cache import main as build_cache
@@ -31,10 +25,10 @@ __all__ = [
     # Téléchargement
     "download_raw",
     # Nettoyage
-    "clean_raw", "clean_file",
+    "clean_raw",
     # Base SQLite
-    "load_database", "import_csvs_to_sqlite",
-    "tag_periode_inplace", "ensure_periode_column",
+    "load_database",
     # Fichiers agrégés
-    "build_cache", "build_geo",
+    "build_cache",
+    "build_geo",
 ]
