@@ -1,71 +1,103 @@
-🚗 Radar Dashboard — Résumé du projet
-🎯 Objectif
+# 🚗 Radar Dashboard — Analyse des vitesses relevées par les radars
 
-Développer un dashboard interactif permettant d’analyser les vitesses relevées par les voitures-radars en France (2021 & 2023), en appliquant un pipeline complet : nettoyage → base SQLite → visualisation.
+> Tableau de bord interactif pour explorer et analyser les vitesses relevées par les voitures-radars en France (data.gouv.fr).
 
-📁 Données utilisées
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Dash](https://img.shields.io/badge/Dash-3.2.0-blue)
+![SQLite](https://img.shields.io/badge/SQLite-Database-blueviolet)
+![Plotly](https://img.shields.io/badge/Plotly-Visualisation-orange)
+![API](https://img.shields.io/badge/API-Sunrise%2FSunset-yellow)
+![License](https://img.shields.io/badge/License-ESIEE--Student-lightgrey)
 
-Données officielles : data.gouv.fr, relevées par voitures-radars.
+---
 
-Deux jeux :
+## 📚 Description
 
-2021 : ~6.6M lignes
+Ce projet consiste à développer un **dashboard web interactif** permettant :
+- d’explorer les vitesses mesurées par les voitures-radars en France,
+- d’analyser les dépassements,
+- de visualiser les localisations sur carte,
+- d’utiliser une **API solaire** (lever/coucher du soleil) pour enrichir les analyses.
 
-2023 : ~7.2M lignes
+Le dashboard est réalisé en **Dash / Plotly**, avec une gestion de données en **SQLite**, et un nettoyage préalable des fichiers CSV bruts.
 
-Colonnes conservées : date, latitude, longitude, mesure, limite, dépassement.
+---
 
-⚙️ Pipeline technique
+## 📁 Data
 
-Téléchargement / Clean :
+### 📌 Source des données
+Les données proviennent du jeu officiel :  
+👉 https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/
 
-Normalisation des dates
+Deux jeux sont utilisés :
+- **2023** : opendata-vitesses-pratiquees-voitures-radars-2023-01-01-2023-12-31.csv
 
-Extraction latitude / longitude
+### ⚙️ Préparation des données
+1. 🔧 **Nettoyage (`clean_data.py`)**
+   - Normalisation des colonnes : `date`, `mesure`, `limite`, `position`
+   - Extraction `latitude` / `longitude`
+   - Conversion des types
+   - Suppression lignes invalides
 
-Conversion en float
+2. 🗄️ **Création de base SQLite (`Create_Database.py`)**
+   - Table `vitesses` avec :  
+     `date`, `latitude`, `longitude`, `mesure`, `limite`, `depassement`
 
-Base SQLite (vitesses.db) :
+3. 🌞 **Enrichissement API solaire**
+   - API Sunrise–Sunset : https://api.sunrise-sunset.org/json  
+   - Détermine si, pour une position, il fait :  
+     🌅 avant lever / ☀️ jour / 🌙 après coucher
 
-insertion via pandas + chunksize
+---
 
-Dashboard Dash/Plotly :
+## 🧭 User Guide
 
-pages (home, simple, complex, about)
+### 🔧 Installation
 
-composants (header, navbar, footer)
-
-API solaire : moment de la journée (lever / coucher)
-
-📊 Résultats clés
-
-La majorité des mesures respecte la limite mais présence d’une longue queue de dépassements.
-
-Distribution centrée sur les limites usuelles : 50, 90, 130 km/h.
-
-2023 montre davantage de dépassements que 2021.
-
-Les périodes autour du lever/coucher du soleil influencent les comportements.
-
-👨‍💻 Architecture (résumé)
-src/
- ├── components/    # Header, navbar, footer, solar card…
- ├── pages/         # pages du dashboard
- └── utils/         # base, nettoyage, API solaire
-
-🚀 Comment lancer
+1. Cloner le dépôt
+```bash
+git clone https://github.com/adam-nouari/DataProject.git
+cd DataProject
+```
+2. Créer et activer un environnement virtuel
+**Windows :**
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+**Linux / macOS :**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+3. Installer les dépendances
+```bash
 pip install -r requirements.txt
-python -m src.utils.Create_Database
+```
+### 🗄️ Préparation des données
+L’application est conçue pour que main.py fasse tout automatiquement :
+
+* Téléchargement des données brutes (via src/utils/get_data.py)
+* Nettoyage et normalisation (via src/utils/clean_data.py)
+* Création de la base SQLite vitesses.db
+* Lancement du dashboard
+
+Aucune manipulation manuelle n'est nécessaire.
+Le script détecte automatiquement si la base existe déjà pour éviter un reprocessing inutile.
+### 🚀 Lancer le Dashboard
+```bash
 python main.py
+```
+➡️ Cela déclenche la chaîne complète :
 
+Téléchargement des fichiers bruts si absents
 
-➡️ Dashboard : http://127.0.0.1:8050
+Nettoyage → génération des CSV nettoyés
 
-🧾 Déclaration
+Construction de la base
+data/database/vitesses.db
 
-Projet original réalisé par notre binôme.
-Les seules sources externes utilisées :
+Démarrage du dashboard Dash
 
-API Sunrise–Sunset (structure JSON)
-
-Documentation Dash (multi-pages)
+Le dashboard est accessible à :
+👉 http://127.0.0.1:8050
