@@ -9,3 +9,5 @@ pytz
 geopandas
 shapely
 folium
+pytest
+pytest-cov

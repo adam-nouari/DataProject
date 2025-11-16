@@ -1,16 +1,37 @@
-# src/components/navbar.py
 """
-Composant Navbar du dashboard
-Barre de navigation simple (Accueil, À propos, Pages, etc.)
+Composant barre de navigation du dashboard.
 """
-
 from dash import html, dcc
 
-def navbar():
+
+def navbar() -> html.Nav:
     """
-    Retourne la barre de navigation.
-    Personnalise les liens selon les pages de ton dashboard.
+    Crée la barre de navigation.
+    
+    Returns:
+        Composant Nav Dash
     """
+    liens = [
+        ("Accueil", "/"),
+        ("Dashboard", "/simple"),
+        ("Géolocalisation", "/complex"),
+        ("À propos", "/about"),
+    ]
+    
+    elements_nav = [
+        dcc.Link(
+            texte,
+            href=url,
+            style={
+                "color": "white",
+                "textDecoration": "none",
+                "fontWeight": "bold" if i == 0 else "normal",
+                "marginRight": "1.5rem" if i < len(liens) - 1 else "0",
+            },
+        )
+        for i, (texte, url) in enumerate(liens)
+    ]
+    
     return html.Nav(
         className="navbar",
         style={
@@ -21,36 +42,9 @@ def navbar():
             "alignItems": "center",
         },
         children=[
-            # Section gauche : titre / logo / accueil
             html.Div(
-                [
-                    dcc.Link(
-                        "🏠 Accueil",
-                        href="/",
-                        style={
-                            "color": "white",
-                            "textDecoration": "none",
-                            "fontWeight": "bold",
-                            "marginRight": "1.5rem",
-                        },
-                    ),
-                    dcc.Link(
-                        "📊 Dashboard",
-                        href="/simple",
-                        style={"color": "white", "textDecoration": "none", "marginRight": "1.5rem"},
-                    ),
-                    dcc.Link(
-                        "📈 Géolocalisation",
-                        href="/complex",
-                        style={"color": "white", "textDecoration": "none", "marginRight": "1.5rem"},
-                    ),
-                    dcc.Link(
-                        "ℹ️ À propos",
-                        href="/about",
-                        style={"color": "white", "textDecoration": "none"},
-                    ),
-                ],
-                style={"display": "flex", "alignItems": "center"},
-            ),
+                elements_nav,
+                style={"display": "flex", "alignItems": "center"}
+            )
         ],
     )

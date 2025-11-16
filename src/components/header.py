@@ -1,15 +1,20 @@
-# src/components/header.py
 """
-Composant Header du dashboard
-Affiche le titre principal, un sous-titre et éventuellement un logo.
+Composant header du dashboard.
 """
-
 from dash import html
 
-def header(title: str = "Radar Dashboard", subtitle: str = "Analyse des vitesses relevées par les radars"):
+
+def header(titre: str = "Radar Dashboard", 
+          sous_titre: str = "Analyse des vitesses relevées par les radars") -> html.Header:
     """
-    Retourne le header du dashboard.
-    Tu peux modifier les styles ou ajouter un logo facilement.
+    Crée le header de l'application.
+    
+    Args:
+        titre: Titre principal
+        sous_titre: Sous-titre descriptif
+        
+    Returns:
+        Composant Header Dash
     """
     return html.Header(
         className="header",
@@ -21,7 +26,7 @@ def header(title: str = "Radar Dashboard", subtitle: str = "Analyse des vitesses
             "borderBottom": "3px solid #ffcc00",
         },
         children=[
-            html.H1(title, style={"marginBottom": "0.5rem", "fontSize": "2rem"}),
-            html.H3(subtitle, style={"marginTop": "0", "fontWeight": "normal"}),
+            html.H1(titre, style={"marginBottom": "0.5rem", "fontSize": "2rem"}),
+            html.H3(sous_titre, style={"marginTop": "0", "fontWeight": "normal"}),
         ],
     )

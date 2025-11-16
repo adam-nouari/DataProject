@@ -1,52 +1,64 @@
+"""
+Module de nettoyage des données brutes.
+Renomme les colonnes et supprime les valeurs manquantes.
+"""
 from pathlib import Path
 import pandas as pd
 
-def clean_file(input_path: Path, output_path: Path):
-    """Nettoie un seul fichier CSV et enregistre le résultat."""
-    print(f"[INFO] Lecture de {input_path.name}")
-    df = pd.read_csv(input_path, sep=";", engine="python")
 
-    # Renommer les colonnes
+def nettoyer_fichier(chemin_entree: Path, chemin_sortie: Path) -> None:
+    """
+    Nettoie un fichier CSV de données radar.
+    
+    Args:
+        chemin_entree: Chemin du fichier CSV brut
+        chemin_sortie: Chemin du fichier CSV nettoyé
+    """
+    df = pd.read_csv(chemin_entree, sep=";", engine="python")
+    
+    # Renommage des colonnes pour cohérence
     df = df.rename(columns={
         "mesure": "vitesse_mesuree",
         "limite": "limitation",
-        # on laisse 'date' et 'position' inchangées
     })
-
-
-    # Convertir en numérique
-    if "vitesse_mesuree" in df.columns:
-        df["vitesse_mesuree"] = pd.to_numeric(df["vitesse_mesuree"], errors="coerce")
-    if "limitation" in df.columns:
-        df["limitation"] = pd.to_numeric(df["limitation"], errors="coerce")
-
-    # Supprimer les lignes contenant une valeur manquante (NaN)
-    avant = len(df)
+    
+    # Conversion en numérique
+    colonnes_numeriques = ["vitesse_mesuree", "limitation"]
+    for col in colonnes_numeriques:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    
+    # Suppression des valeurs manquantes
+    nb_lignes_avant = len(df)
     df = df.dropna()
-    apres = len(df)
-    print(f"[INFO] {avant - apres} lignes supprimées (valeurs manquantes)")
+    nb_lignes_apres = len(df)
+    
+    print(f"  Lignes supprimées: {nb_lignes_avant - nb_lignes_apres}")
+    
+    # Sauvegarde
+    df.to_csv(chemin_sortie, index=False, sep=";")
 
-    # Sauvegarder dans le dossier cleaned
-    df.to_csv(output_path, index=False, sep=";")
-    print(f"[OK] Fichier nettoyé enregistré : {output_path.name}\n")
 
 def main():
-    raw_dir = Path("data/raw")
-    cleaned_dir = Path("data/cleaned")
-    cleaned_dir.mkdir(parents=True, exist_ok=True)
-
-    # Fichiers d'entrée et de sortie
-    files = {
+    """Nettoie tous les fichiers définis."""
+    rep_brut = Path("data/raw")
+    rep_nettoye = Path("data/cleaned")
+    rep_nettoye.mkdir(parents=True, exist_ok=True)
+    
+    fichiers = {
         "vitesse_2023.csv": "vitesse_2023_cleaned.csv"
     }
-
-    for raw_name, clean_name in files.items():
-        input_path = raw_dir / raw_name
-        output_path = cleaned_dir / clean_name
-        if not input_path.exists():
-            print(f"[WARN] Fichier manquant : {input_path}")
+    
+    for nom_brut, nom_nettoye in fichiers.items():
+        chemin_entree = rep_brut / nom_brut
+        chemin_sortie = rep_nettoye / nom_nettoye
+        
+        if not chemin_entree.exists():
+            print(f"Fichier manquant: {nom_brut}")
             continue
-        clean_file(input_path, output_path)
+        
+        nettoyer_fichier(chemin_entree, chemin_sortie)
+
 
 if __name__ == "__main__":
     main()

@@ -1,18 +1,38 @@
-# src/components/footer.py
 """
-Composant Footer du dashboard
-Affiche les crédits, l'année et éventuellement des liens externes.
+Composant footer du dashboard.
 """
-
 from dash import html
 from datetime import datetime
 
-def footer():
-    """
-    Retourne le pied de page du dashboard.
-    """
-    current_year = datetime.now().year
 
+def footer() -> html.Footer:
+    """
+    Crée le pied de page de l'application.
+    
+    Returns:
+        Composant Footer Dash
+    """
+    annee_courante = datetime.now().year
+    
+    liens_externes = [
+        ("GitHub", "https://github.com/adam-nouari/DataProject"),
+        ("Data.gouv.fr", "https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/"),
+    ]
+    
+    elements_liens = [
+        html.A(
+            texte,
+            href=url,
+            target="_blank",
+            style={
+                "color": "#ffcc00",
+                "marginRight": "1rem" if i == 0 else "0",
+                "textDecoration": "none"
+            },
+        )
+        for i, (texte, url) in enumerate(liens_externes)
+    ]
+    
     return html.Footer(
         className="footer",
         style={
@@ -25,25 +45,9 @@ def footer():
         },
         children=[
             html.P(
-                f"© {current_year} - Projet Data ESIEE | Développé en Python & Dash",
+                f"© {annee_courante} - Projet Data ESIEE | Développé en Python & Dash",
                 style={"margin": "0", "fontSize": "0.9rem"},
             ),
-            html.Div(
-                [
-                    html.A(
-                        "GitHub",
-                        href="https://github.com/adam-nouari/DataProject",
-                        target="_blank",
-                        style={"color": "#ffcc00", "marginRight": "1rem", "textDecoration": "none"},
-                    ),
-                    html.A(
-                        "Data.gouv.fr",
-                        href="https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/",
-                        target="_blank",
-                        style={"color": "#ffcc00", "textDecoration": "none"},
-                    ),
-                ],
-                style={"marginTop": "0.5rem"},
-            ),
+            html.Div(elements_liens, style={"marginTop": "0.5rem"}),
         ],
     )

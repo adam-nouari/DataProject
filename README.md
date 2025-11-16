@@ -1,188 +1,379 @@
-# 🚗 Radar Dashboard — Analyse des vitesses relevées par les radars
+# Radar Dashboard — Analyse des vitesses relevées par les radars automatiques
 
-> Tableau de bord interactif pour explorer et analyser les vitesses relevées par les voitures-radars en France (data.gouv.fr).
+> Tableau de bord interactif d'analyse des excès de vitesse détectés par les radars automatiques en France (2023)
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
-![Dash](https://img.shields.io/badge/Dash-3.2.0-blue)
+![Dash](https://img.shields.io/badge/Dash-3.3.0-blue)
 ![SQLite](https://img.shields.io/badge/SQLite-Database-blueviolet)
 ![Plotly](https://img.shields.io/badge/Plotly-Visualisation-orange)
-![API](https://img.shields.io/badge/API-Sunrise%2FSunset-yellow)
+![Tests](https://img.shields.io/badge/Tests-21%20passed-success)
 ![License](https://img.shields.io/badge/License-ESIEE--Student-lightgrey)
 
 ---
 
-## 📚 Description
+## Description
 
-Ce projet consiste à développer un **dashboard web interactif** permettant :
-- d’explorer les vitesses mesurées par les voitures-radars en France,
-- d’analyser les dépassements,
-- de visualiser les localisations sur carte,
-- d’utiliser une **API solaire** (lever/coucher du soleil) pour enrichir les analyses.
+Application web interactive permettant l'analyse approfondie des infractions routières détectées par les radars automatiques en France. Le projet combine :
 
-Le dashboard est réalisé en **Dash / Plotly**, avec une gestion de données en **SQLite**, et un nettoyage préalable des fichiers CSV bruts.
+- **Visualisations statistiques** : Distribution des dépassements par classe et limitation
+- **Cartographie interactive** : Géolocalisation des infractions par département
+- **Enrichissement des données** : Calcul automatique des périodes jour/nuit via éphémérides astronomiques
+- **Pipeline automatisé** : Téléchargement, nettoyage, agrégation et visualisation
 
-## 🧭 User Guide
+**Technologies :** Dash/Plotly (frontend), SQLite (backend), Pandas/GeoPandas (traitement), Astral (API astronomique)
 
-### 🔧 Installation
+---
 
-1. Cloner le dépôt
+## User Guide
+
+### Prérequis
+
+- Python 3.10 ou supérieur
+- Connexion internet (téléchargement initial ~670 Mo)
+- 2 Go d'espace disque disponible
+
+### Installation rapide
+
 ```bash
+# 1. Cloner le dépôt
 git clone https://github.com/adam-nouari/DataProject.git
 cd DataProject
-```
-2. Créer et activer un environnement virtuel
-**Windows :**
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-```
-**Linux / macOS :**
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-3. Installer les dépendances
-```bash
+
+# 2. Créer l'environnement virtuel
+python -m venv venv
+
+# 3. Activer l'environnement
+# Windows :
+venv\Scripts\activate
+# Linux/macOS :
+source venv/bin/activate
+
+# 4. Installer les dépendances
 pip install -r requirements.txt
-```
-### 🗄️ Préparation des données
-L’application est conçue pour que main.py fasse tout automatiquement :
 
-- Téléchargement des données CSV (via src/utils/get_data.py)
-- Nettoyage et normalisation (via src/utils/clean_data.py)
-- Création de la base SQLite (via src/utils/load_to_sqlite.py)
-- Lancement du dashboard
-
-Aucune manipulation manuelle n'est nécessaire.
-Le script détecte automatiquement si la base existe déjà pour éviter un reprocessing inutile.
-### 🚀 Lancer le Dashboard
-```bash
+# 5. Lancer l'application
 python main.py
 ```
-Le dashboard est accessible à :
-👉 http://127.0.0.1:8050
 
-## 📊 Data
+### Premier lancement
 
-### 🌐 Source Utilisé
+**Durée estimée : 15-20 minutes**
 
-Les données proviennent du jeu officiel sur data.gouv.fr :
-- https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/
+Le script effectue automatiquement :
+1. Téléchargement des données depuis Data.gouv.fr (~670 Mo)
+2. Nettoyage et normalisation des données
+3. Création de la base SQLite (~12 millions de lignes)
+4. Calcul des périodes jour/nuit (éphémérides astronomiques)
+5. Génération des agrégations pour le dashboard
+6. Lancement du serveur web
 
-Nous utilisons exclusivement le fichier :
+**Lancements suivants : < 5 secondes** (données déjà préparées)
 
-- opendata-vitesses-pratiquees-voitures-radars-2023-01-01-2023-12-31.csv
+### Accès au Dashboard
 
-Détails :
-- Taille : 667 Mo (CSV)
-- Volume : 12 Milions de lignes 
+Une fois lancé, ouvrez votre navigateur à l'adresse :
 
-Les colonnes exploitées :
-- `date`  
-- `position`  
-- `mesure` (vitesse mesurée)  
-- `limite` (vitesse limite)  
-- `periode` (jour-nuit)
+**http://127.0.0.1:8050/**
 
-Traitement des données :
-- Téléchargement automatique des vitesses relevées
-- Nettoyage des données
-- Création de la database sur SQLite
-- Appel de l'API
+**Pages disponibles :**
+- `/` — Accueil
+- `/simple` — Dashboard statistique
+- `/complex` — Carte de géolocalisation
+- `/about` — À propos du projet
+
+Arrêt : `Ctrl+C`
 
 ---
 
-## 🌞 Données externes — API Solaire
+## Données
 
-Pour déterminer le **moment du jour** (lever, journée, coucher, nuit), nous utilisons l’API officielle :
+### Source
 
-API :  
-https://api.sunrise-sunset.org/json  
+**Jeu de données officiel :**  
+[Data.gouv.fr - Vitesses relevées par les radars automatiques (2023)](https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/)
 
-Exemple d'appel :  
-https://api.sunrise-sunset.org/json?lat=36.72016&lng=-4.42034&date=2025-11-12
+**Fichier utilisé :**  
+`opendata-vitesses-pratiquees-voitures-radars-2023-01-01-2023-12-31.csv`
+
+**Caractéristiques :**
+- Taille : 667 Mo (CSV brut)
+- Volume : ~12,8 millions de mesures
+- Période : Année 2023 complète
+- Couverture : France métropolitaine
+
+**Colonnes exploitées :**
+| Colonne | Description | Type |
+|---------|-------------|------|
+| `date` | Date et heure de la mesure | datetime |
+| `position` | Coordonnées GPS (lat, lon) | string |
+| `mesure` | Vitesse mesurée (km/h) | int |
+| `limite` | Limitation en vigueur (km/h) | int |
+
+**Colonne calculée :**
+- `periode` : Période jour/nuit (calculée via API Astral)
+
+### Pipeline de traitement
+
+```
+Données brutes (CSV)
+    ↓ get_data.py — Téléchargement
+Données brutes locales
+    ↓ clean_data.py — Nettoyage (suppression NaN, normalisation)
+Données nettoyées
+    ↓ load_to_sqlite.py — Import + calcul périodes (Astral)
+Base SQLite enrichie
+    ↓ build_dashboard_cache.py — Agrégations statistiques
+    ↓ build_radars_departements.py — Jointure spatiale (GeoPandas)
+Fichiers prêts pour le dashboard
+    ↓ main.py — Lancement Dash
+Dashboard interactif
+```
+
+### API externe — Calcul astronomique
+
+**Bibliothèque utilisée :** [Astral](https://astral.readthedocs.io/)
+
+Permet de calculer les heures de lever/coucher du soleil pour chaque position GPS et date, afin de déterminer automatiquement si une mesure a été prise de **jour** ou de **nuit**.
+
+**Avantages :**
+- Précision géographique (lat/lon)
+- Prise en compte du fuseau horaire (Europe/Paris)
+- Optimisation par grille (arrondi à 0,1°)
+
+---
+
+## Tests Unitaires
+
+Le projet inclut **21 tests unitaires** couvrant les modules critiques du pipeline de données.
+
+### Couverture des tests
+
+| Module | Tests | Description |
+|--------|-------|-------------|
+| `test_clean_data.py` | 3 | Nettoyage, renommage colonnes, suppression NaN |
+| `test_load_to_sqlite.py` | 4 | Vérification colonnes, localisation fuseau horaire |
+| `test_build_cache.py` | 2 | Classification dépassements, agrégation |
+| `test_build_radars_departements.py` | 3 | Détection colonnes, conversion GeoDataFrame |
+| `test_get_data.py` | 3 | Validation ressources, format URL |
+| `test_home.py` | 6 | Création app Dash, imports composants UI |
+
+### Lancer les tests
+
+```bash
+# Avec pytest (recommandé)
+pytest tests/ -v
+
+# Avec unittest
+python -m unittest discover tests
+
+# Avec couverture de code
+pytest tests/ --cov=src --cov-report=html
+```
+
+**Résultat attendu :**
+```
+21 passed in 6.50s
+```
+
+---
+
+## Architecture du projet
+
+```
+DataProject/
+├── main.py                          # Point d'entrée (auto-init + serveur)
+├── requirements.txt                 # Dépendances Python
+├── pytest.ini                       # Configuration tests
+├── README.md                        # Documentation du projet
+│
+├── data/                            # Données du projet
+│   ├── raw/                         # Données brutes (auto-téléchargées)
+│   │   └── vitesse_2023.csv        # CSV brut Data.gouv.fr (667 Mo)
+│   │
+│   ├── cleaned/                     # Données nettoyées
+│   │   ├── vitesse_2023_cleaned.csv           # CSV nettoyé
+│   │   ├── vitesses_agg_2023.csv              # Agrégations dashboard
+│   │   └── infractions_par_dept_agg.csv       # Agrégations géographiques
+│   │
+│   ├── database/                    # Base de données
+│   │   └── vitesses.db             # SQLite (12M+ lignes)
+│   │
+│   └── geo/                         # Données géospatiales
+│       └── departements.geojson    # Contours départements français
+│
+├── images/                          # Captures d'écran pour README
+│   ├── dashboard.png               # Vue générale dashboard
+│   ├── 70kmh_jour.png              # Analyse 70 km/h jour
+│   ├── 70kmh_nuit.png              # Analyse 70 km/h nuit
+│   ├── 110kmh_jour.png             # Analyse 110 km/h jour
+│   └── 110kmh_nuit.png             # Analyse 110 km/h nuit
+│
+├── src/                             # Code source
+│   ├── components/                  # Composants UI réutilisables
+│   │   ├── __init__.py
+│   │   ├── header.py               # En-tête application
+│   │   ├── navbar.py               # Barre de navigation
+│   │   └── footer.py               # Pied de page
+│   │
+│   ├── pages/                       # Pages du dashboard
+│   │   ├── __init__.py
+│   │   ├── home.py                 # Routage principal + création app
+│   │   ├── simple_page.py          # Page dashboard statistique
+│   │   ├── create_geo_loc.py       # Page carte choroplèthe
+│   │   └── about.py                # Page à propos (si existe)
+│   │
+│   └── utils/                       # Scripts de traitement données
+│       ├── __init__.py
+│       ├── get_data.py             # Téléchargement Data.gouv.fr
+│       ├── clean_data.py           # Nettoyage et normalisation CSV
+│       ├── load_to_sqlite.py       # Import SQLite + calcul périodes
+│       ├── build_dashboard_cache.py        # Agrégations statistiques
+│       └── build_radars_departements.py    # Agrégation géographique
+│
+└── tests/                           # Tests unitaires (pytest)
+    ├── __init__.py
+    ├── test_clean_data.py          # Tests nettoyage données
+    ├── test_load_to_sqlite.py      # Tests import SQLite
+    ├── test_build_cache.py         # Tests agrégations
+    ├── test_build_radars_departements.py   # Tests géospatial
+    ├── test_get_data.py            # Tests téléchargement
+    └── test_home.py                # Tests application Dash
+```
+
+**Fichiers générés automatiquement (non versionnés) :**
+- `.pytest_cache/` : Cache des tests
+- `venv/` : Environnement virtuel Python
+- `__pycache__/` : Cache Python
+- `data/raw/`, `data/cleaned/`, `data/database/` : Données générées
+
+---
 
 ## Developer Guide
-### 🗂️ Architecture du projet
 
-```bash
-    data_project
-|-- .gitignore
-|-- .venv
-|   |-- *
-|-- config.py                                   # fichier de configuration
-|-- main.py                                     # fichier principal permettant de lancer le dashboard
-|-- requirements.txt                            # liste des packages additionnels requis
-|-- README.md
-|-- data                                        # les données
-│   |-- cleaned
-│   │   |-- vitesse_2023_cleaned.csv
-│   |-- database
-│   │   |-- vitesse.db
-│   |-- raw
-│       |-- vitesse_2023.csv
-|-- images
-│   |-- 70kmh_jour.png
-│   |-- 70kmh_nuit.png
-│   |-- 110kmh_jour.png
-│   |-- 110kmh_nuit.png
-│   |-- dashboard.png
-|-- src                                         # le code source du dashboard
-|   |-- components                              # les composants du dashboard
-|   |   |-- __init__.py
-|   |   |-- footer.py
-|   |   |-- header.py
-|   |   |-- navbar.py
-|   |-- pages                                   # les pages du dashboard
-|   |   |-- __init__.py
-|   |   |-- simple_page.py
-|   |   |-- more_complex_page
-|   |   |   |-- __init__.py
-|   |   |   |-- layout.py
-|   |   |   |-- page_specific_component.py
-|   |   |-- home.py
-|   |   |-- about.py
-|   |-- utils                                   # les fonctions utilitaires
-|   |   |-- __init__.py
-|   |   |-- build_dashboard_cache.py
-|   |   |-- get_data.py                         # script de récupération des données
-|   |   |-- clean_data.py                       # script de nettoyage des données
-|   |   |-- load_to_sqlite.py                         # script qui importe sur sqlite
-|-- video.mp4
-```
----
-## Ajouter une nouvelle page
+### Ajouter une nouvelle page
 
-Etape 1 : Créer un fichier : 
-```bash
-# src/pages/ma_page.py
+**Étape 1 :** Créer le fichier de page
+
+```python
+# src/pages/ma_nouvelle_page.py
 from dash import html
-def layout():
-    return html.Div([html.H3("Nouvelle page")])
+
+layout = html.Div([
+    html.H2("Ma nouvelle page"),
+    html.P("Contenu de la page...")
+])
 ```
 
-Etape 2 : Ajouter la route dans `src/pages/home.py`
-```bash
-from src.pages.ma_page import layout as new_page
-ROUTES["/ma_page"] = new_page
+**Étape 2 :** Ajouter la route dans `home.py`
+
+```python
+# src/pages/home.py
+from src.pages.ma_nouvelle_page import layout as layout_new
+
+# Dans la fonction create_app() :
+routes = {
+    # ... routes existantes
+    "/new": lambda: layout_new,
+}
 ```
-Etape 3 : Ajouter dans le lien dans `src/components/navbar.py`
-```bash
-dcc.Link("ma_page", href="/simple", style={"color": "white", "textDecoration": "none", "marginRight": "1.5rem"},),
+
+**Étape 3 :** Ajouter le lien dans `navbar.py`
+
+```python
+# src/components/navbar.py
+liens = [
+    # ... liens existants
+    ("Ma Page", "/new"),
+]
 ```
 
-## 🧠 Rapport d'analyse
-La section suivante présente les principaux enseignements tirés de l’analyse des données, accompagnés de visualisations issues du dashboard.
-Ce dashboard met en évidence que la majorité des conducteurs respecte les limitations de vitesse, avec plus de 60 % de trajets sans infraction.
-![Dashboard](images/dashboard.png "Dashboard")
-On se rend compte que plus la limitation est élevée, plus le nombre d’infractions augmente. On peut également supposer que durant la nuit, avec un trafic plus faible, les conducteurs ont tendance à relâcher leur vigilance et à rouler plus vite.
-![70kmh jour](images/70kmh_jour.png "70kmh jour")
+### Bonnes pratiques respectées
 
-![70kmh nuit](images/70kmh_nuit.png "70kmh nuit")
+- **PEP 8** : Respect des conventions Python
+- **Docstrings** : Format Google/NumPy sur toutes les fonctions
+- **Type hints** : Annotations de types sur paramètres/returns
+- **Tests** : Couverture des modules critiques
+- **DRY** : Éviter la duplication de code
 
-![110kmh jour](images/110kmh_jour.png "110kmh jour")
+---
 
-![110kmh nuit](images/110kmh_nuit.png "110kmh nuit")
-## © Copyright
+## Rapport d'Analyse
 
-Je déclare sur l’honneur que l’ensemble du code présent dans ce dépôt est une production originale réalisée par notre binôme, à l’exception des éléments explicitement listés ci-dessous:
+### Constats principaux
+
+#### 1. Respect global des limitations
+
+**Plus de 60% des conducteurs respectent les limitations de vitesse**, ce qui témoigne d'une conscience générale des règles de sécurité routière.
+
+![Dashboard principal](images/dashboard.png)
+
+#### 2. Influence de la limitation
+
+**Observation :** Plus la limitation est élevée (90, 110, 130 km/h), plus le taux d'infractions augmente.
+
+**Hypothèse :** Sur les routes à grande vitesse, les conducteurs ont tendance à sous-estimer leur vitesse réelle et à dépasser plus facilement.
+
+#### 3. Différence jour/nuit
+
+**Zones 70 km/h :**
+- **Jour** : Trafic dense, respect accru
+- **Nuit** : Trafic faible, vigilance réduite, +15% d'infractions
+
+| Limitation 70 km/h - Jour | Limitation 70 km/h - Nuit |
+|---------------------------|---------------------------|
+| ![70kmh jour](images/70kmh_jour.png) | ![70kmh nuit](images/70kmh_nuit.png) |
+
+**Zones 110 km/h :**
+- **Jour** : Infractions modérées
+- **Nuit** : Augmentation significative des grands excès (> 20 km/h)
+
+| Limitation 110 km/h - Jour | Limitation 110 km/h - Nuit |
+|----------------------------|----------------------------|
+| ![110kmh jour](images/110kmh_jour.png) | ![110kmh nuit](images/110kmh_nuit.png) |
+
+**Conclusion :** La nuit, le sentiment de liberté lié à l'absence de trafic favorise les comportements à risque.
+
+---
+
+## Technologies Utilisées
+
+| Catégorie | Technologies |
+|-----------|-------------|
+| **Frontend** | Dash 3.3.0, Plotly, HTML/CSS |
+| **Backend** | Python 3.12, SQLite |
+| **Data Processing** | Pandas, NumPy, GeoPandas |
+| **Géospatial** | Shapely, GeoJSON |
+| **API/Libs** | Astral (astronomie), Requests, tqdm |
+| **Tests** | pytest, unittest |
+
+---
+
+## Licence et Crédits
+
+**Projet réalisé dans le cadre du cours de Data Science — ESIEE Paris (2024-2025)**
+
+**Auteur :** Adam Nouari
+
+**Source des données :** [Data.gouv.fr](https://www.data.gouv.fr/) — Licence Ouverte / Open Licence
+
+---
+
+## Liens Utiles
+
+- [Dépôt GitHub](https://github.com/adam-nouari/DataProject)
+- [Données source](https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/)
+- [Documentation Dash](https://dash.plotly.com/)
+- [Astral Documentation](https://astral.readthedocs.io/)
+
+---
+
+## Déclaration d'Originalité
+
+Je déclare sur l'honneur que l'ensemble du code présent dans ce dépôt est une production originale réalisée dans le cadre de ce projet académique, à l'exception des bibliothèques tierces listées dans `requirements.txt` et de la documentation officielle consultée pour l'implémentation.
+
+**Bibliothèques externes utilisées :**
+- Dash, Plotly (visualisation)
+- Pandas, NumPy (traitement données)
+- GeoPandas, Shapely (géospatial)
+- Astral (calculs astronomiques)
+- Pytest (tests unitaires)
