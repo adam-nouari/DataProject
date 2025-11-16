@@ -508,6 +508,6 @@ bloc_enrichi["periode"] = np.where(
 
 ---
 
-**Projet réalisé dans le cadre du cours de Data Science — ESIEE Paris (2024-2025)**
+**Projet réalisé dans le cadre du cours de Data Science — ESIEE Paris (2025-2026)**
 
-**Auteur :** Adam Nouari
+**Auteur :** Adam Nouari et Antoine Chen
