@@ -5,3 +5,7 @@ numpy
 requests
 tqdm
 astral
+pytz
+geopandas
+shapely
+folium

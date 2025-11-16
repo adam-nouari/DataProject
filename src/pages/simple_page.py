@@ -34,19 +34,21 @@ layout = html.Div(
                 html.H2(
                     "Analyse des excès de vitesse selon les limitations",
                     style={
-                        "textAlign": "left",
-                        "marginBottom": "0.25rem",
+                        "textAlign": "center",
+                        "marginBottom": "0.5rem",
                         "fontSize": "2rem",
+                        "fontWeight": "600"
                     },
                 ),
-                html.P(
-                    "Visualisation de la répartition des dépassements de vitesse "
-                    "en fonction de la période (jour / nuit) et de la limitation en vigueur.",
+                html.H3(
+                    "Distribution des dépassements de vitesse en fonction de la période (jour / nuit) et de la limitation",
                     style={
-                        "marginTop": "0",
+                        "textAlign": "center",
+                        "color": "#444",
+                        "fontSize": "1.3rem",
                         "marginBottom": "1.5rem",
-                        "color": "#555",
-                        "fontSize": "0.95rem",
+                        "fontWeight": "500",
+                        "letterSpacing": "0.3px"
                     },
                 ),
 
@@ -174,7 +176,7 @@ def register_callbacks(app):
 
         # Titre dynamique avec nombre de mesures
         titre = (
-            "Distribution des dépassements de vitesse par niveau d’infraction "
+            "Distribution des dépassements de vitesse par niveau d'infraction "
             f"({int(total):,} mesures)".replace(",", " ")
         )
 
