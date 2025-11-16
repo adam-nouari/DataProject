@@ -183,6 +183,12 @@ On se rend compte que plus la limitation est élevée, plus le nombre d’infrac
 ![110kmh jour](images/110kmh_jour.png "110kmh jour")
 
 ![110kmh nuit](images/110kmh_nuit.png "110kmh nuit")
+La carte montre une répartition géographique des infractions concentrée dans l’Ouest et le Nord de la France. Ces zones apparaissent nettement plus chargées, mais cela ne signifie pas que ces régions “infractionnent plus” que les autres : la distribution reflète avant tout la couverture réelle du dataset, qui n’inclut pas l’Île-de-France ni une grande partie du Sud du pays.<br>
+En l’absence de ces régions, les départements visibles correspondent principalement
+à la façade Atlantique,au Nord et Nord-Ouest,et à une partie de l’Est.<br>
+Il est donc normal que les infractions semblent fortement concentrées dans ces zones.
+![Geolocalisation](images/Géolocalisation.png "Géolocalisation")
+
 ## © Copyright
 
 Je déclare sur l’honneur que l’ensemble du code présent dans ce dépôt est une production originale réalisée par notre binôme, à l’exception des éléments explicitement listés ci-dessous:
