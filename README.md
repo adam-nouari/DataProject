@@ -122,6 +122,11 @@ https://api.sunrise-sunset.org/json?lat=36.72016&lng=-4.42034&date=2025-11-12
 │   |-- raw
 │       |-- vitesse_2023.csv
 |-- images
+│   |-- 70kmh_jour.png
+│   |-- 70kmh_nuit.png
+│   |-- 110kmh_jour.png
+│   |-- 110kmh_nuit.png
+│   |-- dashboard.png
 |-- src                                         # le code source du dashboard
 |   |-- components                              # les composants du dashboard
 |   |   |-- __init__.py
@@ -167,13 +172,16 @@ dcc.Link("ma_page", href="/simple", style={"color": "white", "textDecoration": "
 ```
 
 ## 🧠 Rapport d'analyse
-
+La section suivante présente les principaux enseignements tirés de l’analyse des données, accompagnés de visualisations issues du dashboard.
 Ce dashboard met en évidence que la majorité des conducteurs respecte les limitations de vitesse, avec plus de 60 % de trajets sans infraction.
 ![Dashboard](images/dashboard.png "Dashboard")
-On se rend compte que plus la limitation est élevée, plus le nombre d’infractions augmente. On peut également supposer que durant la nuit, avec un trafic plus faible, les conducteurs ont tendance à davantage se lâcher au volant.
+On se rend compte que plus la limitation est élevée, plus le nombre d’infractions augmente. On peut également supposer que durant la nuit, avec un trafic plus faible, les conducteurs ont tendance à relâcher leur vigilance et à rouler plus vite.
 ![70kmh jour](images/70kmh_jour.png "70kmh jour")
+
 ![70kmh nuit](images/70kmh_nuit.png "70kmh nuit")
+
 ![110kmh jour](images/110kmh_jour.png "110kmh jour")
+
 ![110kmh nuit](images/110kmh_nuit.png "110kmh nuit")
 ## © Copyright
 
