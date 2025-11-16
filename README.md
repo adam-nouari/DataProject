@@ -21,35 +21,6 @@ Ce projet consiste à développer un **dashboard web interactif** permettant :
 
 Le dashboard est réalisé en **Dash / Plotly**, avec une gestion de données en **SQLite**, et un nettoyage préalable des fichiers CSV bruts.
 
----
-
-## 📁 Data
-
-### 📌 Source des données
-Les données proviennent du jeu officiel :  
-👉 https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/
-
-Deux jeux sont utilisés :
-- **2023** : opendata-vitesses-pratiquees-voitures-radars-2023-01-01-2023-12-31.csv
-
-### ⚙️ Préparation des données
-1. 🔧 **Nettoyage (`clean_data.py`)**
-   - Normalisation des colonnes : `date`, `mesure`, `limite`, `position`
-   - Extraction `latitude` / `longitude`
-   - Conversion des types
-   - Suppression lignes invalides
-
-2. 🗄️ **Création de base SQLite (`Create_Database.py`)**
-   - Table `vitesses` avec :  
-     `date`, `latitude`, `longitude`, `mesure`, `limite`, `depassement`
-
-3. 🌞 **Enrichissement API solaire**
-   - API Sunrise–Sunset : https://api.sunrise-sunset.org/json  
-   - Détermine si, pour une position, il fait :  
-     🌅 avant lever / ☀️ jour / 🌙 après coucher
-
----
-
 ## 🧭 User Guide
 
 ### 🔧 Installation
@@ -77,10 +48,10 @@ pip install -r requirements.txt
 ### 🗄️ Préparation des données
 L’application est conçue pour que main.py fasse tout automatiquement :
 
-* Téléchargement des données brutes (via src/utils/get_data.py)
-* Nettoyage et normalisation (via src/utils/clean_data.py)
-* Création de la base SQLite vitesses.db
-* Lancement du dashboard
+- Téléchargement des données CSV (via src/utils/get_data.py)
+- Nettoyage et normalisation (via src/utils/clean_data.py)
+- Création de la base SQLite (via src/utils/load_to_sqlite.py)
+- Lancement du dashboard
 
 Aucune manipulation manuelle n'est nécessaire.
 Le script détecte automatiquement si la base existe déjà pour éviter un reprocessing inutile.
@@ -88,16 +59,114 @@ Le script détecte automatiquement si la base existe déjà pour éviter un repr
 ```bash
 python main.py
 ```
-➡️ Cela déclenche la chaîne complète :
-
-Téléchargement des fichiers bruts si absents
-
-Nettoyage → génération des CSV nettoyés
-
-Construction de la base
-data/database/vitesses.db
-
-Démarrage du dashboard Dash
-
 Le dashboard est accessible à :
 👉 http://127.0.0.1:8050
+
+## 📊 Data
+
+### 🌐 Source Utilisé
+
+Les données proviennent du jeu officiel sur data.gouv.fr :
+- https://www.data.gouv.fr/fr/datasets/jeux-de-donnees-des-vitesses-relevees-par-les-voitures-radars-a-conduite-externalisee/
+
+Nous utilisons exclusivement le fichier :
+
+- opendata-vitesses-pratiquees-voitures-radars-2023-01-01-2023-12-31.csv
+
+Détails :
+- Taille : 667 Mo (CSV)
+- Volume : 12 Milions de lignes 
+
+Les colonnes exploitées :
+- `date`  
+- `position`  
+- `mesure` (vitesse mesurée)  
+- `limite` (vitesse limite)  
+- `periode` (jour-nuit)
+
+Traitement des données :
+- Téléchargement automatique des vitesses relevées
+- Nettoyage des données
+- Création de la database sur SQLite
+- Appel de l'API
+
+---
+
+## 🌞 Données externes — API Solaire
+
+Pour déterminer le **moment du jour** (lever, journée, coucher, nuit), nous utilisons l’API officielle :
+
+API :  
+https://api.sunrise-sunset.org/json  
+
+Exemple d'appel :  
+https://api.sunrise-sunset.org/json?lat=36.72016&lng=-4.42034&date=2025-11-12
+
+## Developer Guide
+### 🗂️ Architecture du projet
+
+```bash
+    data_project
+|-- .gitignore
+|-- .venv
+|   |-- *
+|-- config.py                                   # fichier de configuration
+|-- main.py                                     # fichier principal permettant de lancer le dashboard
+|-- requirements.txt                            # liste des packages additionnels requis
+|-- README.md
+|-- data                                        # les données
+│   |-- cleaned
+│   │   |-- vitesse_2023_cleaned.csv
+│   |-- database
+│   │   |-- vitesse.db
+│   |-- raw
+│       |-- vitesse_2023.csv
+|-- src                                         # le code source du dashboard
+|   |-- components                              # les composants du dashboard
+|   |   |-- __init__.py
+|   |   |-- footer.py
+|   |   |-- header.py
+|   |   |-- navbar.py
+|   |-- pages                                   # les pages du dashboard
+|   |   |-- __init__.py
+|   |   |-- simple_page.py
+|   |   |-- more_complex_page
+|   |   |   |-- __init__.py
+|   |   |   |-- layout.py
+|   |   |   |-- page_specific_component.py
+|   |   |-- home.py
+|   |   |-- about.py
+|   |-- utils                                   # les fonctions utilitaires
+|   |   |-- __init__.py
+|   |   |-- build_dashboard_cache.py
+|   |   |-- get_data.py                         # script de récupération des données
+|   |   |-- clean_data.py                       # script de nettoyage des données
+|   |   |-- load_to_sqlite.py                         # script qui importe sur sqlite
+|-- video.mp4
+```
+---
+## Ajouter une nouvelle page
+
+Etape 1 : Créer un fichier : 
+```bash
+# src/pages/ma_page.py
+from dash import html
+def layout():
+    return html.Div([html.H3("Nouvelle page")])
+```
+
+Etape 2 : Ajouter la route dans `src/pages/home.py`
+```bash
+from src.pages.ma_page import layout as new_page
+ROUTES["/ma_page"] = new_page
+```
+Etape 3 : Ajouter dans le lien dans `src/components/navbar.py`
+```bash
+dcc.Link("ma_page", href="/simple", style={"color": "white", "textDecoration": "none", "marginRight": "1.5rem"},),
+```
+
+## Rapport d'analyse
+
+## © Copyright
+
+Je déclare sur l’honneur que l’ensemble du code présent dans ce dépôt est une production originale réalisée par notre binôme, à l’exception des éléments explicitement listés ci-dessous:
