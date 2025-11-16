@@ -121,6 +121,7 @@ https://api.sunrise-sunset.org/json?lat=36.72016&lng=-4.42034&date=2025-11-12
 │   │   |-- vitesse.db
 │   |-- raw
 │       |-- vitesse_2023.csv
+|-- images
 |-- src                                         # le code source du dashboard
 |   |-- components                              # les composants du dashboard
 |   |   |-- __init__.py
@@ -165,8 +166,15 @@ Etape 3 : Ajouter dans le lien dans `src/components/navbar.py`
 dcc.Link("ma_page", href="/simple", style={"color": "white", "textDecoration": "none", "marginRight": "1.5rem"},),
 ```
 
-## Rapport d'analyse
+## 🧠 Rapport d'analyse
 
+Ce dashboard met en évidence que la majorité des conducteurs respecte les limitations de vitesse, avec plus de 60 % de trajets sans infraction.
+![Dashboard](images/dashboard.png "Dashboard")
+On se rend compte que plus la limitation est élevée, plus le nombre d’infractions augmente. On peut également supposer que durant la nuit, avec un trafic plus faible, les conducteurs ont tendance à davantage se lâcher au volant.
+![70kmh jour](images/70kmh_jour.png "70kmh jour")
+![70kmh nuit](images/70kmh_nuit.png "70kmh nuit")
+![110kmh jour](images/110kmh_jour.png "110kmh jour")
+![110kmh nuit](images/110kmh_nuit.png "110kmh nuit")
 ## © Copyright
 
 Je déclare sur l’honneur que l’ensemble du code présent dans ce dépôt est une production originale réalisée par notre binôme, à l’exception des éléments explicitement listés ci-dessous:
